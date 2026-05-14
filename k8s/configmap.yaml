@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: news-platform-config
+  namespace: news-platform
+data:
+  KAFKA_BROKER: "kafka-service:9092"
+  KAFKA_TOPIC: "news-articles"
+  MINIO_ENDPOINT: "minio-service:9000"
+  POSTGRES_HOST: "postgres-service"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "news_dw"
+  POSTGRES_USER: "newsadmin"
+  MINIO_ACCESS_KEY: "minioadmin"
+  AIRFLOW_ADMIN_USER: "admin"
