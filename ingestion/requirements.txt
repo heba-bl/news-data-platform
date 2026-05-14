@@ -1,0 +1,5 @@
+kafka-python==2.0.2
+minio==7.2.3
+python-dotenv==1.0.0
+pyarrow==14.0.1
+pandas==2.1.3

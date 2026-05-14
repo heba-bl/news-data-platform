@@ -1,0 +1,134 @@
+{
+  "id": null,
+  "uid": "news-platform",
+  "title": "News Data Platform",
+  "tags": ["news"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 2,
+  "refresh": "1m",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Total Articles Collectés",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "datasource": { "type": "postgres", "uid": "P3D5344ECBBEE1E27" },
+      "options": { "colorMode": "value", "graphMode": "none", "textMode": "auto" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] } } },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "P3D5344ECBBEE1E27" },
+          "rawSql": "SELECT COUNT(*) AS \"Total\" FROM fact_articles",
+          "format": "table",
+          "rawQuery": true
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Dernier Scraping",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "datasource": { "type": "postgres", "uid": "P3D5344ECBBEE1E27" },
+      "options": { "colorMode": "value", "graphMode": "none", "textMode": "auto" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] } } },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "P3D5344ECBBEE1E27" },
+          "rawSql": "SELECT MAX(inserted_at) AS \"Dernier Scraping\" FROM fact_articles",
+          "format": "table",
+          "rawQuery": true
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Articles par Source",
+      "type": "barchart",
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 4 },
+      "datasource": { "type": "postgres", "uid": "P3D5344ECBBEE1E27" },
+      "options": { "orientation": "horizontal" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "P3D5344ECBBEE1E27" },
+          "rawSql": "SELECT source_name AS \"Source\", article_count AS \"Articles\" FROM agg_articles_by_source ORDER BY article_count DESC",
+          "format": "table",
+          "rawQuery": true
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Distribution des Langues",
+      "type": "piechart",
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 4 },
+      "datasource": { "type": "postgres", "uid": "P3D5344ECBBEE1E27" },
+      "options": { "pieType": "pie", "displayLabels": ["name", "percent"] },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "P3D5344ECBBEE1E27" },
+          "rawSql": "SELECT language AS \"Langue\", article_count AS \"Articles\" FROM agg_language_distribution ORDER BY article_count DESC",
+          "format": "table",
+          "rawQuery": true
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Articles par Jour (21 derniers jours)",
+      "type": "timeseries",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 13 },
+      "datasource": { "type": "postgres", "uid": "P3D5344ECBBEE1E27" },
+      "options": { "tooltip": { "mode": "single" } },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "P3D5344ECBBEE1E27" },
+          "rawSql": "SELECT date AS \"time\", article_count AS \"Articles\" FROM agg_articles_by_day ORDER BY date",
+          "format": "time_series",
+          "rawQuery": true
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Top 20 Mots Clés",
+      "type": "table",
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 22 },
+      "datasource": { "type": "postgres", "uid": "P3D5344ECBBEE1E27" },
+      "options": { "showHeader": true },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "P3D5344ECBBEE1E27" },
+          "rawSql": "SELECT keyword AS \"Mot Clé\", frequency AS \"Fréquence\" FROM agg_top_keywords ORDER BY frequency DESC LIMIT 20",
+          "format": "table",
+          "rawQuery": true
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Articles par Catégorie",
+      "type": "barchart",
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 22 },
+      "datasource": { "type": "postgres", "uid": "P3D5344ECBBEE1E27" },
+      "options": { "orientation": "horizontal" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "P3D5344ECBBEE1E27" },
+          "rawSql": "SELECT category_name AS \"Catégorie\", article_count AS \"Articles\" FROM agg_articles_by_category ORDER BY article_count DESC LIMIT 15",
+          "format": "table",
+          "rawQuery": true
+        }
+      ]
+    }
+  ]
+}
+

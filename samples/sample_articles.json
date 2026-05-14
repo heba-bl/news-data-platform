@@ -1,0 +1,57 @@
+[
+  {
+    "title": "المغرب يسجل نموًا اقتصاديًا ملحوظًا في الربع الأول",
+    "author": "أحمد الحسني",
+    "published_at": "2024-03-15T10:30:00",
+    "category": "اقتصاد",
+    "content": "أفادت المندوبية السامية للتخطيط بأن الاقتصاد المغربي سجل نموًا بنسبة 3.2 بالمئة خلال الربع الأول من عام 2024، مدفوعًا بأداء قوي في قطاعات الصناعة والخدمات والسياحة. وأشارت المندوبية إلى أن هذا النمو جاء رغم التحديات الدولية المتمثلة في ارتفاع أسعار الطاقة وتباطؤ الاقتصاد العالمي.",
+    "source": "Hespress",
+    "url": "https://hespress.com/economie/123456.html",
+    "language": "ar",
+    "scraped_at": "2024-03-15T11:00:00"
+  },
+  {
+    "title": "انطلاق الموسم الرياضي الجديد لكرة القدم المغربية",
+    "author": "يوسف البكري",
+    "published_at": "2024-03-14T18:00:00",
+    "category": "رياضة",
+    "content": "انطلق الموسم الرياضي الجديد لبطولة الدوري المغربي المحترف لكرة القدم، وسط حضور جماهيري كبير. وشهدت الجولة الأولى منافسات حامية الوطيس بين الأندية الكبرى، حيث حقق الوداد البيضاوي فوزًا مثيرًا على حساب المغرب الفاسي بثلاثة أهداف مقابل هدفين.",
+    "source": "Akhbarona",
+    "url": "https://www.akhbarona.com/sport/78901.html",
+    "language": "ar",
+    "scraped_at": "2024-03-14T19:00:00"
+  },
+  {
+    "title": "Global Leaders Gather for Climate Summit in Paris",
+    "author": "Sarah Johnson",
+    "published_at": "2024-03-15T08:00:00",
+    "category": "World",
+    "content": "World leaders convened in Paris on Thursday for a major climate summit aimed at accelerating the transition to renewable energy. The summit, attended by representatives from over 120 countries, focuses on new commitments to reduce carbon emissions by 2030. European Commission President emphasized the urgency of action, stating that current pledges fall short of what is needed to limit global warming to 1.5 degrees Celsius.",
+    "source": "BBC",
+    "url": "https://www.bbc.com/news/world/climate-summit-paris-2024",
+    "language": "en",
+    "scraped_at": "2024-03-15T09:00:00"
+  },
+  {
+    "title": "Tech Giants Report Record Quarterly Earnings Amid AI Boom",
+    "author": "Michael Chen",
+    "published_at": "2024-03-14T20:00:00",
+    "category": "Technology",
+    "content": "Major technology companies reported record-breaking quarterly earnings, driven largely by surging demand for artificial intelligence products and cloud computing services. Analysts attributed the strong performance to enterprise adoption of generative AI tools, which have become central to business operations across multiple industries. The results exceeded Wall Street expectations by a significant margin, sending stock prices higher in after-hours trading.",
+    "source": "CNN",
+    "url": "https://edition.cnn.com/tech/ai-earnings-q1-2024",
+    "language": "en",
+    "scraped_at": "2024-03-14T21:00:00"
+  },
+  {
+    "title": "Oil Prices Rise as OPEC+ Maintains Production Cuts",
+    "author": "Reuters Staff",
+    "published_at": "2024-03-15T07:30:00",
+    "category": "Business",
+    "content": "Crude oil prices climbed on Friday after OPEC+ reaffirmed its commitment to production cuts through mid-2024, tightening global supply. Brent crude rose 1.2 percent to $84.50 per barrel, while West Texas Intermediate gained 1.1 percent to $79.80. The decision by the alliance to maintain output restrictions came amid expectations of stronger demand in the second half of the year, particularly from China and emerging markets.",
+    "source": "Reuters",
+    "url": "https://www.reuters.com/business/energy/opec-production-cuts-2024",
+    "language": "en",
+    "scraped_at": "2024-03-15T08:30:00"
+  }
+]
