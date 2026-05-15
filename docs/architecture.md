@@ -4,15 +4,20 @@
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════════╗
-║                          SOURCES DE DONNÉES (Web)                               ║
+║                      SOURCES DE DONNÉES — 8 sources Web                         ║
 ║                                                                                  ║
-║   ┌──────────┐  ┌──────┐  ┌─────────┐  ┌──────────┐  ┌──────────┐             ║
-║   │   BBC    │  │ CNN  │  │ Reuters │  │ Hespress │  │Akhbarona │             ║
-║   │(UK/EN)   │  │(US/EN│  │ (UK/EN) │  │ (MA/AR)  │  │ (MA/AR)  │             ║
-║   └────┬─────┘  └──┬───┘  └────┬────┘  └────┬─────┘  └────┬─────┘             ║
-╚════════╪═══════════╪════════════╪═════════════╪═════════════╪════════════════════╝
-         │           │            │             │             │
-         └───────────┴────────────┴─────────────┴─────────────┘
+║  ┌───────┐ ┌─────┐ ┌────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐          ║
+║  │  BBC  │ │ CNN │ │Reuters │ │AlJazeera │ │ Hespress │ │Akhbarona │          ║
+║  │(UK/EN)│ │US/EN│ │(UK/EN) │ │ (QA/AR)  │ │ (MA/AR)  │ │ (MA/AR)  │          ║
+║  └───┬───┘ └──┬──┘ └───┬────┘ └────┬─────┘ └────┬─────┘ └────┬─────┘          ║
+║               ┌──────────┐  ┌───────────┐                                       ║
+║               │  Lakom   │  │ Barlamane │                                       ║
+║               │ (MA/AR)  │  │ (MA/AR)   │                                       ║
+║               └────┬─────┘  └─────┬─────┘                                       ║
+╚════════════════════╪══════════════╪═══════════════════════════════════════════════╝
+                     └──────┬───────┘
+                             │
+         └───────────────────┴──────────────────────────┘
                                   │
                     Python + BeautifulSoup (Scraping)
                                   │
@@ -124,24 +129,27 @@
 ```
 news-net (réseau interne Docker)
 │
-├── zookeeper    :2181   ──▶  coordination Kafka
-├── kafka        :9092   ──▶  broker messages
-├── kafka-ui     :8090   ──▶  interface web Kafka
+├── zookeeper       :2181  ──▶  coordination Kafka
+├── kafka           :9092  ──▶  broker messages
+├── kafka-ui        :8090  ──▶  interface web Kafka
 │
-├── minio        :9000   ──▶  object storage (API S3)
-│                :9200   ──▶  console web MinIO
+├── minio           :9000  ──▶  object storage (API S3)
+│                   :9200  ──▶  console web MinIO
+├── minio-init             ──▶  initialisation buckets bronze/silver/gold
 │
-├── postgres     :5432   ──▶  data warehouse
+├── postgres        :5432  ──▶  data warehouse
 │
-├── scraper               ──▶  collecte articles toutes les heures
-├── consumer              ──▶  Kafka → MinIO Bronze
+├── scraper                ──▶  collecte articles (8 sources, toutes les heures)
+├── consumer               ──▶  Kafka → MinIO Bronze
+├── processor              ──▶  Bronze → Silver → Gold (ETL)
+├── warehouse-loader       ──▶  Gold → PostgreSQL
 │
-├── airflow-webserver :8080  ──▶  UI orchestration
-├── airflow-scheduler        ──▶  planificateur DAGs
+├── airflow-webserver :8080 ──▶  UI orchestration
+├── airflow-scheduler       ──▶  planificateur DAGs
 │
-├── metabase     :3000   ──▶  BI analytics
-├── prometheus   :9090   ──▶  collecte métriques
-└── grafana      :3001   ──▶  dashboards visuels
+├── metabase        :3000  ──▶  BI analytics
+├── prometheus      :9090  ──▶  collecte métriques
+└── grafana         :3001  ──▶  dashboards visuels
 ```
 
 ---

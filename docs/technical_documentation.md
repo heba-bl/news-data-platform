@@ -77,13 +77,15 @@ docker compose ps
 ### Grafana — Visualiser les Données
 1. Ouvrir http://localhost:3001
 2. Login : `admin` / `admin123`
-3. Menu gauche → Dashboards → **News Data Platform - Complet**
-4. Le dashboard contient 13 panels :
-   - Total articles, Sources actives, Mots-clés, Taux qualité
-   - Articles par Source / Pays / Langue
-   - Tendance articles par jour
-   - Top 20 mots-clés, Catégories/Thèmes
-   - Pipeline runs, Rapport qualité
+3. Menu gauche → Dashboards → **News Data Platform** (tag "news")
+4. Le dashboard contient :
+   - Total articles collectés
+   - Articles Aujourd'hui
+   - Articles par Source (bar chart horizontal)
+   - Distribution des Langues (pie chart)
+   - Articles par Jour — 21 derniers jours (time series)
+   - Top 20 mots-clés
+   - Articles par Catégorie
 
 ### Kafka UI — Monitoring Streaming
 1. Ouvrir http://localhost:8090
@@ -96,17 +98,20 @@ docker compose ps
 
 ```
 news-data-platform/
-├── docker-compose.yml          # Orchestration des 11 services
+├── docker-compose.yml          # Orchestration des 14 services
 ├── .env                        # Variables d'environnement
 ├── README.md                   # Guide démarrage rapide
 │
-├── scrapers/                   # Web scraping
-│   ├── run_scrapers.py         # Orchestrateur des scrapers
-│   ├── bbc_scraper.py          # Scraper BBC News
-│   ├── cnn_scraper.py          # Scraper CNN
-│   ├── reuters_scraper.py      # Scraper Reuters
-│   ├── hespress_scraper.py     # Scraper Hespress (AR)
-│   ├── akhbarona_scraper.py    # Scraper Akhbarona (AR)
+├── scrapers/                   # Web scraping (8 sources)
+│   ├── run_scrapers.py         # Orchestrateur des 8 scrapers
+│   ├── hespress_scraper.py     # Scraper Hespress (Maroc - AR)
+│   ├── akhbarona_scraper.py    # Scraper Akhbarona (Maroc - AR)
+│   ├── lakom_scraper.py        # Scraper Lakom (Maroc - AR)
+│   ├── barlamane_scraper.py    # Scraper Barlamane (Maroc - AR)
+│   ├── bbc_scraper.py          # Scraper BBC News (UK - EN)
+│   ├── cnn_scraper.py          # Scraper CNN (US - EN)
+│   ├── reuters_scraper.py      # Scraper Reuters (UK - EN)
+│   ├── aljazeera_scraper.py    # Scraper Al Jazeera (Qatar - AR)
 │   ├── kafka_producer.py       # Envoi vers Kafka
 │   └── base_scraper.py         # Classe de base
 │
@@ -204,6 +209,7 @@ docker exec -it postgres psql -U newsadmin -d news_dw
 # Requêtes utiles
 SELECT COUNT(*) FROM fact_articles;
 SELECT source_name, article_count FROM agg_articles_by_source;
+SELECT country, article_count FROM agg_articles_by_country;
 SELECT * FROM pipeline_runs ORDER BY started_at DESC LIMIT 5;
 SELECT * FROM data_quality_log ORDER BY run_date DESC LIMIT 3;
 ```

@@ -79,7 +79,8 @@ docker compose ps
 2. Login : `admin` / `admin123`
 3. Menu gauche → Dashboards → **News Data Platform** (tag "news")
 4. Le dashboard contient :
-   - Total articles collectés (186+)
+   - Total articles collectés
+   - Articles Aujourd'hui
    - Articles par Source (bar chart horizontal)
    - Distribution des Langues (pie chart)
    - Articles par Jour — 21 derniers jours (time series)
