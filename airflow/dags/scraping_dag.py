@@ -87,9 +87,48 @@ def scrape_reuters(**context):
     return len(articles)
 
 
+def scrape_lakom(**context):
+    sys.path.insert(0, SCRAPERS_PATH)
+    from lakom_scraper import LakomScraper
+    from kafka_producer import send_batch
+    scraper = LakomScraper()
+    articles = scraper.scrape()
+    logger.info(f"Lakom: {len(articles)} articles scraped")
+    if articles:
+        stats = send_batch(articles)
+        context["task_instance"].xcom_push(key="lakom_stats", value=stats)
+    return len(articles)
+
+
+def scrape_barlamane(**context):
+    sys.path.insert(0, SCRAPERS_PATH)
+    from barlamane_scraper import BarlamaneScraper
+    from kafka_producer import send_batch
+    scraper = BarlamaneScraper()
+    articles = scraper.scrape()
+    logger.info(f"Barlamane: {len(articles)} articles scraped")
+    if articles:
+        stats = send_batch(articles)
+        context["task_instance"].xcom_push(key="barlamane_stats", value=stats)
+    return len(articles)
+
+
+def scrape_aljazeera(**context):
+    sys.path.insert(0, SCRAPERS_PATH)
+    from aljazeera_scraper import AlJazeeraScraper
+    from kafka_producer import send_batch
+    scraper = AlJazeeraScraper()
+    articles = scraper.scrape()
+    logger.info(f"AlJazeera: {len(articles)} articles scraped")
+    if articles:
+        stats = send_batch(articles)
+        context["task_instance"].xcom_push(key="aljazeera_stats", value=stats)
+    return len(articles)
+
+
 def log_scraping_summary(**context):
     ti = context["task_instance"]
-    sources = ["hespress", "akhbarona", "bbc", "cnn", "reuters"]
+    sources = ["hespress", "akhbarona", "lakom", "barlamane", "bbc", "cnn", "reuters", "aljazeera"]
     total_sent = 0
     for source in sources:
         stats = ti.xcom_pull(key=f"{source}_stats", task_ids=f"scrape_{source}") or {}
@@ -115,10 +154,13 @@ with DAG(
 
     t_hespress = PythonOperator(task_id="scrape_hespress", python_callable=scrape_hespress)
     t_akhbarona = PythonOperator(task_id="scrape_akhbarona", python_callable=scrape_akhbarona)
+    t_lakom = PythonOperator(task_id="scrape_lakom", python_callable=scrape_lakom)
+    t_barlamane = PythonOperator(task_id="scrape_barlamane", python_callable=scrape_barlamane)
     t_bbc = PythonOperator(task_id="scrape_bbc", python_callable=scrape_bbc)
     t_cnn = PythonOperator(task_id="scrape_cnn", python_callable=scrape_cnn)
     t_reuters = PythonOperator(task_id="scrape_reuters", python_callable=scrape_reuters)
+    t_aljazeera = PythonOperator(task_id="scrape_aljazeera", python_callable=scrape_aljazeera)
 
     t_summary = PythonOperator(task_id="log_summary", python_callable=log_scraping_summary)
 
-    start >> [t_hespress, t_akhbarona, t_bbc, t_cnn, t_reuters] >> t_summary >> end
+    start >> [t_hespress, t_akhbarona, t_lakom, t_barlamane, t_bbc, t_cnn, t_reuters, t_aljazeera] >> t_summary >> end

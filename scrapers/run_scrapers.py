@@ -22,17 +22,23 @@ logger = logging.getLogger(__name__)
 
 from hespress_scraper import HespressScraper
 from akhbarona_scraper import AkhbaronaScraper
+from lakom_scraper import LakomScraper
+from barlamane_scraper import BarlamaneScraper
 from bbc_scraper import BBCScraper
 from cnn_scraper import CNNScraper
 from reuters_scraper import ReutersScraper
+from aljazeera_scraper import AlJazeeraScraper
 from kafka_producer import send_batch
 
 SCRAPERS = [
     HespressScraper(),
     AkhbaronaScraper(),
+    LakomScraper(),
+    BarlamaneScraper(),
     BBCScraper(),
     CNNScraper(),
     ReutersScraper(),
+    AlJazeeraScraper(),
 ]
 
 INTERVAL_HOURS = int(os.getenv("SCRAPING_INTERVAL_HOURS", 1))

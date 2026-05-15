@@ -55,7 +55,7 @@ PLATFORM_LINEAGE = [
     DatasetLineage(
         dataset_name="raw_articles_bronze",
         layer="bronze",
-        source_datasets=["hespress", "akhbarona", "bbc", "cnn", "reuters"],
+        source_datasets=["hespress", "akhbarona", "lakom", "barlamane", "bbc", "cnn", "reuters", "aljazeera"],
         pipeline="kafka_consumer",
         location="minio://bronze/raw/",
         format="JSON",
@@ -108,6 +108,15 @@ PLATFORM_LINEAGE = [
         location="minio://gold/articles_by_source/",
         format="Parquet",
         schema={"source": "string", "article_count": "int", "avg_word_count": "int"},
+    ),
+    DatasetLineage(
+        dataset_name="articles_by_country_gold",
+        layer="gold",
+        source_datasets=["cleaned_articles_silver"],
+        pipeline="silver_to_gold",
+        location="minio://gold/articles_by_country/",
+        format="Parquet",
+        schema={"country": "string", "article_count": "int"},
     ),
     DatasetLineage(
         dataset_name="top_keywords_gold",

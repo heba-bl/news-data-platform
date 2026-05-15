@@ -52,6 +52,17 @@ STOPWORDS_AR = {
 
 ALL_STOPWORDS = STOPWORDS_EN | STOPWORDS_AR
 
+SOURCE_COUNTRY_MAP = {
+    "Hespress":   "Morocco",
+    "Akhbarona":  "Morocco",
+    "Lakom":      "Morocco",
+    "Barlamane":  "Morocco",
+    "BBC":        "United Kingdom",
+    "CNN":        "United States",
+    "Reuters":    "United Kingdom",
+    "AlJazeera":  "Qatar",
+}
+
 
 def load_silver_data() -> pd.DataFrame:
     client = get_client()
@@ -140,6 +151,19 @@ def build_top_keywords(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(records)
 
 
+def build_articles_by_country(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+    df["country"] = df["source"].map(SOURCE_COUNTRY_MAP).fillna("Unknown")
+    result = (
+        df.groupby("country")
+        .agg(article_count=("url", "count"))
+        .reset_index()
+        .sort_values("article_count", ascending=False)
+    )
+    result["computed_at"] = datetime.utcnow().isoformat()
+    return result
+
+
 def build_language_distribution(df: pd.DataFrame) -> pd.DataFrame:
     result = (
         df.groupby("language")
@@ -168,6 +192,7 @@ def process_silver_to_gold():
         "articles_by_day": build_articles_by_day(df),
         "articles_by_source": build_articles_by_source(df),
         "articles_by_category": build_articles_by_category(df),
+        "articles_by_country": build_articles_by_country(df),
         "top_keywords": build_top_keywords(df),
         "language_distribution": build_language_distribution(df),
     }

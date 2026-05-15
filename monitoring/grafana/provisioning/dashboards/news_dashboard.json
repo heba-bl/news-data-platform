@@ -28,7 +28,7 @@
     },
     {
       "id": 2,
-      "title": "Dernier Scraping",
+      "title": "Articles Aujourd'hui",
       "type": "stat",
       "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
       "datasource": { "type": "postgres", "uid": "P3D5344ECBBEE1E27" },
@@ -38,7 +38,7 @@
         {
           "refId": "A",
           "datasource": { "type": "postgres", "uid": "P3D5344ECBBEE1E27" },
-          "rawSql": "SELECT MAX(inserted_at) AS \"Dernier Scraping\" FROM fact_articles",
+          "rawSql": "SELECT COUNT(*) AS \"Aujourd'hui\" FROM fact_articles WHERE inserted_at >= CURRENT_DATE",
           "format": "table",
           "rawQuery": true
         }

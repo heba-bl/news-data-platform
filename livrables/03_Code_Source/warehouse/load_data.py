@@ -179,6 +179,7 @@ def load_gold_aggregations():
         "articles_by_day": ("agg_articles_by_day", load_articles_by_day),
         "articles_by_source": ("agg_articles_by_source", load_articles_by_source),
         "articles_by_category": ("agg_articles_by_category", load_articles_by_category),
+        "articles_by_country": ("agg_articles_by_country", load_articles_by_country),
         "top_keywords": ("agg_top_keywords", load_top_keywords),
         "language_distribution": ("agg_language_distribution", load_language_dist),
     }
@@ -232,6 +233,18 @@ def load_articles_by_category(conn, df: pd.DataFrame):
                    VALUES (%s, %s, %s, NOW())
                    ON CONFLICT (category_name, source_name) DO UPDATE SET article_count = EXCLUDED.article_count, computed_at = NOW()""",
                 (row.get("category"), row.get("source"), int(row.get("article_count", 0))),
+            )
+    conn.commit()
+
+
+def load_articles_by_country(conn, df: pd.DataFrame):
+    with conn.cursor() as cur:
+        for _, row in df.iterrows():
+            cur.execute(
+                """INSERT INTO agg_articles_by_country (country, article_count, computed_at)
+                   VALUES (%s, %s, NOW())
+                   ON CONFLICT (country) DO UPDATE SET article_count = EXCLUDED.article_count, computed_at = NOW()""",
+                (row.get("country"), int(row.get("article_count", 0))),
             )
     conn.commit()
 

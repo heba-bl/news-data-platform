@@ -22,8 +22,8 @@ Concevoir une **plateforme Big Data distribuée** capable de :
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    SOURCES DE DONNÉES                           │
-│   BBC News  │  CNN  │  Reuters  │  Hespress  │  Akhbarona      │
+│                    SOURCES DE DONNÉES (8 sources)               │
+│ BBC │ CNN │ Reuters │ AlJazeera │ Hespress │ Akhbarona │ Lakom │ Barlamane │
 └──────────────────────┬──────────────────────────────────────────┘
                        │ Web Scraping (Python + BeautifulSoup)
                        ▼
@@ -72,18 +72,21 @@ Concevoir une **plateforme Big Data distribuée** capable de :
 
 ## 4. Sources de Données
 
-### Sites Marocains
+### Sites Marocains (4 sources)
 | Source | URL | Langue | Catégories |
 |---|---|---|---|
 | **Hespress** | hespress.com | Arabe/Français | Politique, Sport, Économie |
 | **Akhbarona** | akhbarona.com | Arabe | Actualité générale |
+| **Lakom** | lakom.ma | Arabe | Actualité générale |
+| **Barlamane** | barlamane.com | Arabe | Politique, Parlement |
 
-### Sites Internationaux
+### Sites Internationaux (4 sources)
 | Source | URL | Langue | Catégories |
 |---|---|---|---|
 | **BBC News** | bbc.com/news | Anglais | Monde, Tech, Science, Sport |
 | **CNN** | edition.cnn.com | Anglais | Monde, Politique, Business |
 | **Reuters** | reuters.com | Anglais | Finance, Politique, Marchés |
+| **Al Jazeera** | aljazeera.net | Arabe | Monde, Politique (Qatar) |
 
 ### Données Collectées
 - Titre, Auteur, Date de publication
@@ -126,8 +129,11 @@ Airflow DAG: scraping_batch (toutes les heures)
   └── ScrapingTask(BBC) → KafkaProducer
   └── ScrapingTask(CNN) → KafkaProducer
   └── ScrapingTask(Reuters) → KafkaProducer
+  └── ScrapingTask(AlJazeera) → KafkaProducer
   └── ScrapingTask(Hespress) → KafkaProducer
   └── ScrapingTask(Akhbarona) → KafkaProducer
+  └── ScrapingTask(Lakom) → KafkaProducer
+  └── ScrapingTask(Barlamane) → KafkaProducer
 ```
 
 ### Pipeline 2 : Transformation Bronze → Silver
@@ -169,10 +175,10 @@ Airflow DAG: warehouse_load (quotidien)
 
 ### Traçabilité (Data Lineage)
 ```
-[EXTERNAL] hespress, akhbarona, bbc, cnn, reuters
+[EXTERNAL] hespress, akhbarona, lakom, barlamane, bbc, cnn, reuters, aljazeera
     └──[kafka_consumer]──▶ [BRONZE] raw_articles_bronze (JSON, MinIO)
          └──[bronze_to_silver]──▶ [SILVER] cleaned_articles_silver (Parquet)
-              └──[silver_to_gold]──▶ [GOLD] articles_by_day, by_source, keywords
+              └──[silver_to_gold]──▶ [GOLD] by_day, by_source, by_country, keywords
                    └──[warehouse_load]──▶ [WAREHOUSE] fact_articles (PostgreSQL)
 ```
 
@@ -224,14 +230,17 @@ dim_source ──── fact_articles ──── dim_category
 
 ### Infrastructure Docker Compose
 ```
-11 services conteneurisés :
+14 services conteneurisés :
 ├── zookeeper        (coordination Kafka)
 ├── kafka            (message broker)
 ├── kafka-ui         (interface Kafka)
 ├── minio            (object storage)
+├── minio-init       (initialisation buckets)
 ├── postgres         (data warehouse)
-├── scraper          (web scraping)
-├── consumer         (Kafka → MinIO)
+├── scraper          (web scraping — 8 sources)
+├── consumer         (Kafka → MinIO Bronze)
+├── processor        (Bronze → Silver → Gold)
+├── warehouse-loader (Gold → PostgreSQL)
 ├── airflow-webserver (orchestration UI)
 ├── airflow-scheduler (scheduler DAGs)
 ├── metabase         (BI analytics)
@@ -254,11 +263,11 @@ dim_source ──── fact_articles ──── dim_category
 
 ### Données Collectées
 - **900+ articles** bruts dans MinIO Bronze
-- **173 articles** chargés dans PostgreSQL après ETL
-- **5 sources** actives (BBC, Reuters, CNN, Akhbarona, Hespress)
+- **173+ articles** chargés dans PostgreSQL après ETL
+- **8 sources** actives (BBC, Reuters, CNN, AlJazeera, Hespress, Akhbarona, Lakom, Barlamane)
 - **131 mots-clés** extraits et indexés
-- **3 pays** couverts (United Kingdom, United States, Morocco)
-- **2 langues** (Anglais 99%, Arabe 1%)
+- **4 pays** couverts (United Kingdom, United States, Morocco, Qatar)
+- **2 langues** (Anglais, Arabe)
 
 ### Performance Pipeline
 | Pipeline | Entrée | Sortie | Durée |

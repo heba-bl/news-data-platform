@@ -5,19 +5,20 @@ Plateforme complète de collecte, stockage, transformation et visualisation d'ar
 ## Architecture
 
 ```
-[Hespress | Akhbarona | BBC | CNN | Reuters]
+[Hespress | Akhbarona | Lakom | Barlamane | BBC | CNN | Reuters | AlJazeera]
          ↓ Python Scrapers
     [Apache Kafka]  ← Streaming Events
          ↓ Kafka Consumer
   [MinIO — Data Lake]
     ├── Bronze (JSON brut)
     ├── Silver (Parquet nettoyé)
-    └── Gold  (Parquet agrégé)
+    └── Gold  (Parquet agrégé : by_day, by_source, by_country, by_category, top_keywords)
          ↓ ETL Pipeline
   [PostgreSQL — Data Warehouse]
     ├── fact_articles
     ├── dim_source / dim_category / dim_date
-    └── agg_* (agrégations Gold)
+    └── agg_articles_by_day / agg_articles_by_source / agg_articles_by_country
+        agg_articles_by_category / agg_top_keywords / agg_language_distribution
          ↓
   [Metabase / Grafana — Dashboards]
 
@@ -61,15 +62,15 @@ docker compose run --rm airflow-init
 
 ## Accès aux interfaces
 
-| Service         | URL                        | Credentials         |
-|----------------|---------------------------|---------------------|
-| Airflow         | http://localhost:8080      | admin / admin123    |
-| MinIO Console   | http://localhost:9001      | minioadmin / minioadmin123 |
-| Kafka UI        | http://localhost:8090      | —                   |
-| Metabase        | http://localhost:3000      | (setup initial)     |
-| Grafana         | http://localhost:3001      | admin / admin123    |
-| Prometheus      | http://localhost:9090      | —                   |
-| PostgreSQL      | localhost:5432             | newsadmin / newsadmin123 |
+| Service         | URL                        | Credentials                |
+|----------------|---------------------------|----------------------------|
+| Airflow         | http://localhost:8080      | admin / admin123           |
+| MinIO Console   | http://localhost:9200      | minioadmin / minioadmin123 |
+| Kafka UI        | http://localhost:8090      | —                          |
+| Metabase        | http://localhost:3000      | (setup initial)            |
+| Grafana         | http://localhost:3001      | admin / admin123           |
+| Prometheus      | http://localhost:9090      | —                          |
+| PostgreSQL      | localhost:5432             | newsadmin / newsadmin123   |
 
 ## Structure du Projet
 
@@ -83,13 +84,16 @@ news-data-platform/
 │   ├── Dockerfile
 │   ├── requirements.txt
 │   ├── base_scraper.py           # Classe de base
-│   ├── hespress_scraper.py
-│   ├── akhbarona_scraper.py
-│   ├── bbc_scraper.py
-│   ├── cnn_scraper.py
-│   ├── reuters_scraper.py
+│   ├── hespress_scraper.py       # Maroc (AR)
+│   ├── akhbarona_scraper.py      # Maroc (AR)
+│   ├── lakom_scraper.py          # Maroc (AR)
+│   ├── barlamane_scraper.py      # Maroc (AR)
+│   ├── bbc_scraper.py            # UK (EN)
+│   ├── cnn_scraper.py            # US (EN)
+│   ├── reuters_scraper.py        # UK (EN)
+│   ├── aljazeera_scraper.py      # Qatar (AR)
 │   ├── kafka_producer.py         # Envoi vers Kafka
-│   └── run_scrapers.py           # Point d'entrée
+│   └── run_scrapers.py           # Point d'entrée (8 sources)
 │
 ├── ingestion/                    # Consommation Kafka → Bronze
 │   ├── Dockerfile
@@ -132,7 +136,7 @@ news-data-platform/
 
 ### DAG 1 : `scraping_batch` (toutes les heures — `:00`)
 ```
-start → [hespress | akhbarona | bbc | cnn | reuters] → log_summary → end
+start → [hespress | akhbarona | lakom | barlamane | bbc | cnn | reuters | aljazeera] → log_summary → end
 ```
 
 ### DAG 2 : `transformation_pipeline` (toutes les heures — `:30`)
@@ -147,12 +151,12 @@ start → load_articles → load_aggregations → refresh_stats → log_run → 
 
 ## Architecture Médaillon
 
-| Couche   | Stockage         | Format   | Contenu                          |
-|----------|-----------------|----------|----------------------------------|
-| Bronze   | MinIO/bronze    | JSON     | Articles bruts tels que scrapés  |
-| Silver   | MinIO/silver    | Parquet  | Nettoyés, normalisés, enrichis   |
-| Gold     | MinIO/gold      | Parquet  | Agrégations analytiques          |
-| DWH      | PostgreSQL      | Tables   | Dimensions + Faits + Agrégats    |
+| Couche   | Stockage         | Format   | Contenu                                        |
+|----------|-----------------|----------|------------------------------------------------|
+| Bronze   | MinIO/bronze    | JSON     | Articles bruts tels que scrapés (8 sources)    |
+| Silver   | MinIO/silver    | Parquet  | Nettoyés, normalisés, enrichis, langue détectée|
+| Gold     | MinIO/gold      | Parquet  | by_day, by_source, by_country, top_keywords    |
+| DWH      | PostgreSQL      | Tables   | Dimensions + Faits + 6 tables d'agrégation     |
 
 ## Contrôles Qualité
 
@@ -227,11 +231,12 @@ docker compose down -v
 ## Lignage des Données
 
 ```
-[hespress|akhbarona|bbc|cnn|reuters]
+[hespress|akhbarona|lakom|barlamane|bbc|cnn|reuters|aljazeera]
           ──[scrapers]──▶ raw_articles_bronze (MinIO/bronze)
   raw_articles_bronze ──[bronze_to_silver]──▶ cleaned_articles_silver (MinIO/silver)
   cleaned_articles_silver ──[silver_to_gold]──▶ articles_by_day_gold (MinIO/gold)
   cleaned_articles_silver ──[silver_to_gold]──▶ articles_by_source_gold (MinIO/gold)
+  cleaned_articles_silver ──[silver_to_gold]──▶ articles_by_country_gold (MinIO/gold)
   cleaned_articles_silver ──[silver_to_gold]──▶ top_keywords_gold (MinIO/gold)
   cleaned_articles_silver ──[warehouse_load]──▶ fact_articles_dw (PostgreSQL)
 ```

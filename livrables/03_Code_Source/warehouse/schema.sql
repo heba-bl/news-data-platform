@@ -96,6 +96,13 @@ CREATE TABLE IF NOT EXISTS agg_language_distribution (
     computed_at   TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS agg_articles_by_country (
+    id            SERIAL PRIMARY KEY,
+    country       VARCHAR(100) NOT NULL UNIQUE,
+    article_count INT NOT NULL,
+    computed_at   TIMESTAMP DEFAULT NOW()
+);
+
 -- ─── GOVERNANCE TABLES ──────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS pipeline_runs (
@@ -125,7 +132,10 @@ CREATE TABLE IF NOT EXISTS data_quality_log (
 INSERT INTO dim_source (source_name, country, language, base_url) VALUES
     ('Hespress',   'Morocco',        'ar', 'https://hespress.com'),
     ('Akhbarona',  'Morocco',        'ar', 'https://www.akhbarona.com'),
+    ('Lakom',      'Morocco',        'ar', 'https://lakom.ma'),
+    ('Barlamane',  'Morocco',        'ar', 'https://www.barlamane.com'),
     ('BBC',        'United Kingdom', 'en', 'https://www.bbc.com'),
     ('CNN',        'United States',  'en', 'https://edition.cnn.com'),
-    ('Reuters',    'United Kingdom', 'en', 'https://www.reuters.com')
+    ('Reuters',    'United Kingdom', 'en', 'https://www.reuters.com'),
+    ('AlJazeera',  'Qatar',          'ar', 'https://www.aljazeera.net')
 ON CONFLICT (source_name) DO NOTHING;
