@@ -47,3 +47,11 @@ Thumbs.db
 # Airflow
 airflow/logs/
 airflow/plugins/
+
+# Temp Office files
+~$*.pptx
+~$*.xlsx
+~$*.docx
+
+# Screenshots (trop lourds pour Git)
+docs/screenshots/pdf_page_*.png

@@ -70,11 +70,14 @@
 ║  │      │   published_at      │                                                   ║
 ║  │      │   source_id FK ─────┼──▶ dim_source                                   ║
 ║  │      │   category_id FK ───┼──▶ dim_category                                 ║
-║  │      │   content           │                                                   ║
-║  │      │   url               │                                                   ║
-║  │      │   language          │                                                   ║
-║  │      │   word_count        │                                                   ║
 ║  │      └─────────────────────┘                                                   ║
+║  │                                                                                ║
+║  │  ┌──────────────────────┐      ┌──────────────────────┐                       ║
+║  │  │     dim_source       │      │     dim_category      │                       ║
+║  │  │  source_id PK        │      │  category_id PK       │                       ║
+║  │  │  name                │      │  name                 │                       ║
+║  │  │  country             │      └──────────────────────┘                       ║
+║  │  └──────────────────────┘                                                       ║
 ║  │                                                                                ║
 ║  │  TABLES AGRÉGÉES (Gold Layer Matérialisé) :                                   ║
 ║  │  ┌──────────────────────┐  ┌──────────────────────┐                           ║
@@ -98,14 +101,18 @@
 ║  │  - 13 panels analytiques   │    │  - BI self-service          │                ║
 ║  │  - Total articles          │    │  - Exploration libre        │                ║
 ║  │  - Articles/source         │    │  - Graphiques avancés       │                ║
-║  │  - Articles/pays           │    │                             │                ║
-║  │  - Tendances temporelles   │    └────────────────────────────┘                ║
-║  │  - Top mots-clés           │                                                   ║
-║  │  - Qualité + Pipeline      │    ┌────────────────────────────┐                ║
-║  └────────────────────────────┘    │       PROMETHEUS           │                ║
+║  │  - Articles/pays           │    │  - Questions SQL            │                ║
+║  │  - Tendances temporelles   │    │  - Dashboards partagés      │                ║
+║  │  - Top mots-clés           │    └────────────────────────────┘                ║
+║  │  - Qualité + Pipeline      │                                                   ║
+║  └────────────────────────────┘    ┌────────────────────────────┐                ║
+║                                    │       PROMETHEUS           │                ║
 ║                                    │  :9090                      │                ║
 ║                                    │  - Métriques système        │                ║
 ║                                    │  - CPU, RAM, réseau         │                ║
+║                                    │  - Kafka lag                │                ║
+║                                    │  - Scraper health           │                ║
+║                                    │  - Pipeline duration        │                ║
 ║                                    └────────────────────────────┘                ║
 ╚════════════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -187,4 +194,3 @@ news-net (réseau interne Docker)
 │                 └──[silver_to_gold]──▶ [GOLD] aggregats │
 │                      └──[warehouse_load]──▶ [DWH] facts │
 └─────────────────────────────────────────────────────────┘
-```
